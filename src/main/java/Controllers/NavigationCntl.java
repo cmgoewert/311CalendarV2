@@ -18,11 +18,13 @@ public class NavigationCntl {
     private LoginCntl parentCntl;
     private ContactsCntl contactCntl;
     private TaskCntl theTaskCntl;
+    private Serialize serialize;
     
     public NavigationCntl(LoginCntl newLoginCntl){
         theMainMenuUI = new MainMenuUI(this);
         theMainMenuUI.setVisible(true);
         parentCntl = newLoginCntl;
+        serialize = new Serialize(parentCntl.getUserList());
     }
     
     public void requestContactCntl(){

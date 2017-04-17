@@ -45,4 +45,8 @@ public class LoginCntl {
     public void addNewUser(User userToAdd){
         theUserList.addUser(userToAdd);
     }
+    
+    public UserList getUserList(){
+        return theUserList;
+    }
 }

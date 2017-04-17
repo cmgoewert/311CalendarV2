@@ -5,6 +5,8 @@
  */
 package Model;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author cmg5831
@@ -13,6 +15,8 @@ public class User {
     private String username;
     private char[] password;
     private String name;
+    private ArrayList<Task> tasks;
+    private ArrayList<Contact> contacts;
     
     public User(){
         
@@ -22,6 +26,8 @@ public class User {
         username = newUsername;
         password = newPassword;
         name = newName;
+        tasks = new ArrayList<>();
+        contacts = new ArrayList<>();
     }
 
     public String getUsername() {
@@ -38,6 +44,22 @@ public class User {
 
     public void setPassword(char[] password) {
         this.password = password;
+    }
+    
+    public ArrayList<Task> getTasks(){
+        return tasks;
+    }
+    
+    public ArrayList<Contact> getContacts(){
+        return contacts;
+    }
+
+    public void setTasks(ArrayList<Task> tasks) {
+        this.tasks = tasks;
+    }
+
+    public void setContacts(ArrayList<Contact> contacts) {
+        this.contacts = contacts;
     }
     
     
