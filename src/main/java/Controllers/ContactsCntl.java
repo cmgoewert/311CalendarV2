@@ -7,6 +7,7 @@ package Controllers;
 
 import Model.Contact;
 import Model.ContactsTableModel;
+import Model.User;
 import UserInterface.ContactsUI;
 import UserInterface.NewContactUI;
 import java.util.ArrayList;
@@ -22,10 +23,12 @@ public class ContactsCntl {
     private NewContactUI theNewUI;
     private ArrayList<Contact> theContactList;
     private ContactsTableModel contactTableModel;
+    private User currUser;
     
-    public ContactsCntl(NavigationCntl theCntl, boolean display){
+    public ContactsCntl(NavigationCntl theCntl, boolean display, User currUser){
         parentCntl = theCntl;
-        
+        this.currUser = currUser;
+        theContactList = currUser.getContacts();
         if(theContactList == null){
             theContactList = new ArrayList<>();
             for(int i = 0; i < 15;i++){
@@ -70,6 +73,9 @@ public class ContactsCntl {
             }
         }
         theContactList.add(newContact);
+        currUser.setContacts(theContactList);
+        new Serialize().write(parentCntl.getUserList());
+        parentCntl.setUserList(new Serialize().read());
         //System.out.println(newContact.getAddress());//testline
         theNewUI.dispose();
     }

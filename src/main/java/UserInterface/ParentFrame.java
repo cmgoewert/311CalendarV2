@@ -21,6 +21,6 @@ public class ParentFrame extends JFrame{
         this.setTitle("Task Manager");
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
-        this.setIconImage(new ImageIcon("calendar-icon.png").getImage());
+        this.setIconImage(new ImageIcon("icon.ico").getImage());
     }
 }

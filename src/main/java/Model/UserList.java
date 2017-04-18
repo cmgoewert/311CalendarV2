@@ -15,9 +15,9 @@ public class UserList {
      private ArrayList<User> theListOfUsers;
     
     public UserList(){
-        if(theListOfUsers == null){
-            buildTestUserList();
-        }    
+//        if(theListOfUsers == null){
+//            buildTestUserList();
+//        }    
         
     }
     
@@ -50,6 +50,16 @@ public class UserList {
     
     public void addUser(User userToAdd){
         theListOfUsers.add(userToAdd);
+    }
+    
+    public User getCurrUser(String username){
+        User tempUser = null;
+        for(int i = 0; i<theListOfUsers.size(); i++){
+            if(theListOfUsers.get(i).getUsername().equals(username)){
+                tempUser = theListOfUsers.get(i);
+            }
+        }
+        return tempUser;
     }
     
 }

@@ -22,9 +22,10 @@ public class LoginCntl {
     
     public LoginCntl(){
         theLoginUI = new LoginUI(this);
-        if(theUserList == null){
-            theUserList = new UserList();
-        } 
+        theUserList = new Serialize().read();
+//        if(theUserList == null){
+//            theUserList = new UserList();
+//        } 
     }
     
     public boolean requestAuthenticate(String usernameToCheck, char[] passwordToCheck){
@@ -32,8 +33,8 @@ public class LoginCntl {
         return result;
     }
     
-    public void requestNavCntl(){
-        theNavigationCntl = new NavigationCntl(this);
+    public void requestNavCntl(String username){
+        theNavigationCntl = new NavigationCntl(this, username);
         theLoginUI.setVisible(false);
         
     }
@@ -44,6 +45,8 @@ public class LoginCntl {
     
     public void addNewUser(User userToAdd){
         theUserList.addUser(userToAdd);
+        new Serialize().write(theUserList);
+        theUserList = new Serialize().read();
     }
     
     public UserList getUserList(){

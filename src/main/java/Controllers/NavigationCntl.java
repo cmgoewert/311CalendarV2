@@ -6,6 +6,8 @@
 package Controllers;
 
 import Model.Contact;
+import Model.User;
+import Model.UserList;
 import UserInterface.MainMenuUI;
 import java.util.ArrayList;
 
@@ -18,22 +20,35 @@ public class NavigationCntl {
     private LoginCntl parentCntl;
     private ContactsCntl contactCntl;
     private TaskCntl theTaskCntl;
+    private CalendarCntl theCalendarCntl;
     private Serialize serialize;
+    private UserList theUserList;
+    private String username;
+    private User currUser;
     
-    public NavigationCntl(LoginCntl newLoginCntl){
+    public NavigationCntl(LoginCntl newLoginCntl, String username){
+        serialize = new Serialize();
+        theUserList = serialize.read();
+        this.username = username;
+        currUser = theUserList.getCurrUser(username);
         theMainMenuUI = new MainMenuUI(this);
         theMainMenuUI.setVisible(true);
         parentCntl = newLoginCntl;
-        serialize = new Serialize(parentCntl.getUserList());
+        
     }
     
     public void requestContactCntl(){
-        contactCntl = new ContactsCntl(this,true);
+        contactCntl = new ContactsCntl(this,true,currUser);
+        theMainMenuUI.setVisible(false);
+    }
+    
+    public void requestCalendarCntl(){
+        theCalendarCntl = new CalendarCntl(this,currUser);
         theMainMenuUI.setVisible(false);
     }
     
     public void requestTaskCntl(){
-        theTaskCntl = new TaskCntl(this);
+        theTaskCntl = new TaskCntl(this,currUser);
         theMainMenuUI.setVisible(false);
     }
     
@@ -43,9 +58,17 @@ public class NavigationCntl {
     
     public ArrayList<Contact> requestContactList(){
         if(contactCntl == null){
-            contactCntl = new ContactsCntl(this,false);
+            contactCntl = new ContactsCntl(this,false,currUser);
         }
-        return contactCntl.getContactList();
+        return theUserList.getCurrUser(username).getContacts();
+    }
+    
+    public UserList getUserList(){
+        return theUserList;
+    }
+    
+    public void setUserList(UserList newUserList){
+        theUserList = newUserList;
     }
     
 }
