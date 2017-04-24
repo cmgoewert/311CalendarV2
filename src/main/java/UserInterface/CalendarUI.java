@@ -74,8 +74,8 @@ public class CalendarUI extends ParentFrame{
         
         calendarPanel.setBorder(BorderFactory.createTitledBorder("Calendar"));
         
-        prevButton.addActionListener(new PrevListener());
-        nextButton.addActionListener(new NextListener());
+        prevButton.addActionListener(new NextListener());
+        nextButton.addActionListener(new PrevListener());
         yearBox.addActionListener(new YearListener());
         
         JPanel topPanel = new JPanel();
@@ -187,36 +187,71 @@ public class CalendarUI extends ParentFrame{
         return taskInfo;
     }
     
+    public ArrayList<Task> getTaskList(){
+        return parentCntl.getTaskList();
+    }
+    
     class CalendarRenderer extends DefaultTableCellRenderer{
         public Component getTableCellRendererComponent (JTable table, Object value, boolean selected, boolean focused, int row, int column){
             super.getTableCellRendererComponent(table, value, selected, focused, row, column);
+            JPanel cellPanel = new JPanel();
+            cellPanel.setLayout(new BorderLayout());
+            JLabel dateValue = new JLabel("date");
+            try{
+                dateValue.setText(value.toString());
+            }
+            catch(Exception e){
+               dateValue.setText("");
+            }
+            
+            dateValue.setFont(new Font(Font.SANS_SERIF, Font.BOLD,18));
+            cellPanel.add(dateValue,BorderLayout.WEST);
+            
             if (column == 0 || column == 6){ 
-                setBackground(new Color(255, 220, 220));
+                cellPanel.setBackground(new Color(255, 220, 220));
             }
             else{ 
-                setBackground(new Color(255, 255, 255));
+                cellPanel.setBackground(new Color(255, 255, 255));
             }
             if (value != null){
                 if (Integer.parseInt(value.toString()) == day && currMonth == month && currYear == year){ //Today
-                    setBackground(new Color(220, 220, 255));
+                    cellPanel.setBackground(new Color(220, 220, 255));
                 }
                 int[][] theTasks = getTasks();
+                ArrayList<Task> taskList = getTaskList();
                 for(int i = 0; i < theTasks.length; i++){
-                    System.out.println(theTasks[i][0]+" Day:"+theTasks[i][1]);
-                    System.out.println(value.toString()+ " Here is the day value");
-                    System.out.println(currMonth + "this is the current month, shold equal first thing above");
-                    if(Integer.parseInt(value.toString())==theTasks[i][1] && currMonth == theTasks[i][0]){
-                        setBackground(new Color(0,255,0));
+//                    System.out.println(theTasks[i][0]+" Day:"+theTasks[i][1]);
+//                    System.out.println(value.toString()+ " Here is the day value");
+//                    System.out.println(currMonth + "this is the current month, shold equal first thing above");
+                    
+                    
+                    if(Integer.parseInt(value.toString())==theTasks[i][1] && month == theTasks[i][0]){
+                        Task currTask = taskList.get(i);
+                        switch(currTask.getUrgency()){
+                            case 0:
+                                cellPanel.setBackground(new Color(255,0,0));
+                                break;
+                            case 1:
+                                cellPanel.setBackground(new Color(255,255,0));
+                                break;
+                            case 2:
+                                cellPanel.setBackground(new Color(0,255,0));
+                                break;
+                        }
+                        JLabel title = new JLabel(currTask.getTitle());
+                        title.setFont(new Font(Font.SANS_SERIF, Font.ITALIC,10));
+                        title.setBorder(new EmptyBorder(0,5,0,0));
+                        cellPanel.add(title,BorderLayout.CENTER);
                     }
                 }
                 
             }
             
             
-            setFont(new Font(Font.SANS_SERIF, Font.BOLD,18));
-            setBorder(new LineBorder(Color.black));
-            setForeground(Color.black);
-            return this;
+  
+            cellPanel.setBorder(new LineBorder(Color.black));
+            cellPanel.setForeground(Color.black);
+            return cellPanel;
         }
     }
     

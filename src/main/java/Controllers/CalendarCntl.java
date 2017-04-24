@@ -52,4 +52,8 @@ public class CalendarCntl {
         
         return taskInfo;
     }
+    
+    public ArrayList<Task> getTaskList(){
+        return currUser.getTasks();
+    }
 }
