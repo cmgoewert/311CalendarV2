@@ -39,6 +39,7 @@ public class MainMenuUI extends ParentFrame{
         viewCalendar = new JButton("View Calendar");
         viewCalendar.setFont(font);
         viewCalendar.setBorder(BorderFactory.createCompoundBorder(new EmptyBorder(25, 0, 25, 0), new EmptyBorder(0,0,0,0)));
+        viewCalendar.addActionListener(new CalendarListener());
         
         viewContacts = new JButton("View Contacts");
         viewContacts.setFont(font);
@@ -91,6 +92,12 @@ public class MainMenuUI extends ParentFrame{
     class TaskListener implements ActionListener{
         public void actionPerformed(ActionEvent event){
             parentNavigationCntl.requestTaskCntl();
+        }
+    }
+    
+    class CalendarListener implements ActionListener{
+        public void actionPerformed(ActionEvent event){
+            parentNavigationCntl.requestCalendarCntl();
         }
     }
 }
