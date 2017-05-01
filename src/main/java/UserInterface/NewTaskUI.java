@@ -38,9 +38,11 @@ public class NewTaskUI extends ParentFrame{
     private JPanel mainPanel, navPanel, labelPanel;
     private JButton save, cancel;
     private JPanel[] labelCells;
+    private int theTask;
     
-    public NewTaskUI(TaskCntl theCntl){
+    public NewTaskUI(TaskCntl theCntl, int requestedTask){
         parentCntl = theCntl;
+        theTask = requestedTask;
         initComponents();
     }
     
@@ -104,6 +106,7 @@ public class NewTaskUI extends ParentFrame{
             collabBox.addItem(contacts.get(i).toString());
         }
         collabBox.setPreferredSize(new Dimension(512,45));
+        collabBox.setSelectedIndex(-1);
         
         urgencyField = new JComboBox();
         urgencyField.setFont(font);
@@ -162,6 +165,25 @@ public class NewTaskUI extends ParentFrame{
         navPanel.add(cancel);
         navPanel.add(save);
         navPanel.setBorder(new EmptyBorder(20, 10, 10, 10));
+        
+        if(theTask != -1){
+            titleField.setText(parentCntl.getUser().getTasks().get(theTask).getTitle());
+            descField.setText(parentCntl.getUser().getTasks().get(theTask).getDescription());
+            int index = -1;
+            for(int i = 0; i < parentCntl.getUser().getContacts().size(); i++){
+                try{
+                    if(parentCntl.getUser().getContacts().get(i).toString().equals(parentCntl.getUser().getTasks().get(theTask).getCollaborator().toString()))
+                    index = i;
+                }
+                catch(Exception e){
+                    
+                }
+                
+            }
+            collabBox.setSelectedIndex(index);
+            urgencyField.setSelectedIndex(parentCntl.getUser().getTasks().get(theTask).getUrgency());
+            instructions.setText("Change the following information and press save to edit your task.");
+        }
 
         this.getContentPane().setLayout(new BorderLayout());
         this.getContentPane().add(instructions, BorderLayout.NORTH);
@@ -179,13 +201,24 @@ public class NewTaskUI extends ParentFrame{
         ArrayList<Contact> contactList = parentCntl.requestContacts();
         Contact newContact = null;
         for (int i = 0; i < contactList.size(); i++) {
-            if (contactList.get(i).toString().equals(collabBox.getSelectedItem().toString())) {
-                newContact = contactList.get(i);
+            try {
+                if (contactList.get(i).toString().equals(collabBox.getSelectedItem().toString())) {
+                    newContact = contactList.get(i);
+                }
+            } catch (Exception e) {
+
             }
+
         }
 
         Task taskToAdd = new Task(titleField.getText(), descField.getText(), newSpin.getValue().toString(), newContact, urgencyField.getSelectedIndex());
-        parentCntl.addNewTask(taskToAdd);
+        if(theTask != -1){
+            parentCntl.changeTask(taskToAdd, theTask);
+        }
+        else{
+            parentCntl.addNewTask(taskToAdd);
+        }
+        
         this.parentCntl.getTableModel().fireTableDataChanged();
     }
 

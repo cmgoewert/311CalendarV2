@@ -52,8 +52,23 @@ public class ContactsCntl {
         parentCntl.requestThisCntl();
     }
     
-    public void requestNewContact(){
-        theNewUI = new NewContactUI(this);
+    public User getUser(){
+        return currUser;
+    }
+    
+    public void updateUsers(){
+        new Serialize().write(parentCntl.getUserList());
+        parentCntl.setUserList(new Serialize().read());
+    }
+    
+    public void requestNewContact(int contactIndex){
+        theNewUI = new NewContactUI(this, contactIndex);
+    }
+    
+    public void changeContact(Contact newContact, int index){
+        theContactList.set(index, newContact);
+        currUser.setContacts(theContactList);
+        updateUsers();
     }
     
     public void exportContact(int[] index){

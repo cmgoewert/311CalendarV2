@@ -16,19 +16,26 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 /**
  *
  * @author Chandler
  */
 public class TasksUI extends ParentFrame{
     private TaskCntl parentCntl;
-    private JButton backButton,newTaskButton;
+    private JButton backButton,newTaskButton,deleteTaskButton,editButton;
     private JTable theTasksTable;
-    private JPanel buttonPanel,tablePanel;
+    private JPanel buttonPanel,tablePanel,searchPanel;
     private JScrollPane theScrollPane;
     private JComboBox theUrgencyBox;
-                
+    private JLabel searchLabel;
+    private JTextField searchText;
+    private TableRowSorter<TableModel> rowSorter;
+                    
     
     public TasksUI(TaskCntl theCntl){
         parentCntl = theCntl;
@@ -49,10 +56,20 @@ public class TasksUI extends ParentFrame{
         newTaskButton.setFont(lfont);
         newTaskButton.addActionListener(new NewListener());
         
+        deleteTaskButton = new JButton("Delete");
+        deleteTaskButton.setFont(lfont);
+        deleteTaskButton.addActionListener(new DeleteListener());
+        
+        editButton = new JButton("View & Edit");
+        editButton.setFont(lfont);
+        editButton.addActionListener(new EditListener());
+        
         buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(1,2,0,0));
+        buttonPanel.setLayout(new GridLayout(1,4,0,0));
         buttonPanel.add(backButton);
         buttonPanel.add(newTaskButton);
+        buttonPanel.add(editButton);
+        buttonPanel.add(deleteTaskButton);
         
         theTasksTable = new JTable(this.parentCntl.getTableModel());
         theTasksTable.setFont(tableFont);
@@ -76,9 +93,54 @@ public class TasksUI extends ParentFrame{
         tablePanel.setLayout(new BorderLayout());
         tablePanel.add(theScrollPane, BorderLayout.CENTER);
         
+        searchLabel = new JLabel("Search Tasks:");
+        searchLabel.setFont(lfont);
+        
+        searchText = new JTextField();
+        searchText.setEditable(true);
+        searchText.setPreferredSize(new Dimension(350,35));
+        
+        searchPanel = new JPanel();
+        searchPanel.add(searchLabel);
+        searchPanel.add(searchText);
+        
+        rowSorter = new TableRowSorter<>(theTasksTable.getModel());  
+        theTasksTable.setRowSorter(rowSorter);
+        searchText.getDocument().addDocumentListener(new DocumentListener(){
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                String text = searchText.getText();
+
+                if (text.trim().length() == 0) {
+                    rowSorter.setRowFilter(null);
+                } else {
+                    rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+                }
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                String text = searchText.getText();
+
+                if (text.trim().length() == 0) {
+                    rowSorter.setRowFilter(null);
+                } else {
+                    rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+                }
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+        });
+        
         this.getContentPane().setLayout(new BorderLayout());
         this.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
         this.getContentPane().add(tablePanel,BorderLayout.CENTER);
+        this.getContentPane().add(searchPanel,BorderLayout.NORTH);
     }
     
     class BackListener implements ActionListener{
@@ -89,7 +151,33 @@ public class TasksUI extends ParentFrame{
     
     class NewListener implements ActionListener{
         public void actionPerformed(ActionEvent event){
-            parentCntl.requestNewTask();
+            parentCntl.requestNewTask(-1);
         }
     }
-}
+    
+    class EditListener implements ActionListener {
+
+        public void actionPerformed(ActionEvent event) {
+            if (theTasksTable.getSelectedRow() == -1) {
+
+                JOptionPane.showMessageDialog(null, "Please select a task!");
+            } else {
+                int selectedTableRow = theTasksTable.getSelectedRow();
+                int selectedModelRow = theTasksTable.convertRowIndexToModel(selectedTableRow);
+                parentCntl.requestNewTask(selectedModelRow);
+            }
+        }
+    }
+
+        class DeleteListener implements ActionListener {
+
+            public void actionPerformed(ActionEvent event) {
+                int selectedTableRow = theTasksTable.getSelectedRow();
+                int selectedModelRow = theTasksTable.convertRowIndexToModel(selectedTableRow);
+                //MediaListUI.this.theMediaCntl.getMediaList().getListOfMedia().remove(selectedModelRow);
+                parentCntl.getUser().getTasks().remove(selectedModelRow);
+                parentCntl.updateUsers();
+                parentCntl.getTableModel().fireTableDataChanged();
+            }
+        }
+    }

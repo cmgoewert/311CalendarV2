@@ -36,9 +36,11 @@ public class NewContactUI extends ParentFrame{
     private JButton save,cancel;
     private JPanel[] labelCells;
     private JPanel labelPanel;
+    private int theContact;
     
-    public NewContactUI(ContactsCntl theCntl){
+    public NewContactUI(ContactsCntl theCntl, int contactIndex){
         parentCntl = theCntl;
+        theContact = contactIndex;
         initComponents();
     }
     
@@ -138,6 +140,15 @@ public class NewContactUI extends ParentFrame{
         navPanel.setLayout(new GridLayout(1,2,0,0));
         navPanel.add(cancel);
         navPanel.add(save);
+        
+        if(theContact != -1){
+            firstNameField.setText(parentCntl.getContactList().get(theContact).getFirstName());
+            lastNameField.setText(parentCntl.getContactList().get(theContact).getLastName());
+            addressField.setText(parentCntl.getContactList().get(theContact).getAddress());
+            phoneField.setText(parentCntl.getContactList().get(theContact).getPhone());
+            relationField.setText(parentCntl.getContactList().get(theContact).getRelationship());
+            instructions.setText("Change the following information and press save to update your contact.");
+        }
        
         this.getContentPane().setLayout(new BorderLayout());
         this.getContentPane().add(instructions, BorderLayout.NORTH);
@@ -157,7 +168,13 @@ public class NewContactUI extends ParentFrame{
     }
     
      private void saveButtonActionPerformed(java.awt.event.ActionEvent evt){ 
-        parentCntl.addNewContact(new Contact(firstNameField.getText(),lastNameField.getText(),addressField.getText(),phoneField.getText(),relationField.getText()));
+        Contact newContact = new Contact(firstNameField.getText(),lastNameField.getText(),addressField.getText(),phoneField.getText(),relationField.getText());
+        if(theContact != -1){
+            parentCntl.changeContact(newContact, theContact);
+        }
+        else{
+            parentCntl.addNewContact(newContact);
+        }
         this.parentCntl.getTableModel().fireTableDataChanged();
     }
     

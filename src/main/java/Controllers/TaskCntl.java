@@ -48,8 +48,20 @@ public class TaskCntl {
         parentCntl.requestThisCntl();
     }
     
-    public void requestNewTask(){
-        theNewUI = new NewTaskUI(this);
+    public User getUser(){
+        return currUser;
+    }
+    
+    public void changeTask(Task newTask, int index){
+        theTasksList.set(index, newTask);
+        currUser.setTasks(theTasksList);
+        new Serialize().write(parentCntl.getUserList());
+        parentCntl.setUserList(new Serialize().read());
+        theNewUI.dispose();
+    }
+    
+    public void requestNewTask(int requestedTask){
+        theNewUI = new NewTaskUI(this, requestedTask);
     }
     
     public void addNewTask(Task newTask){
@@ -74,5 +86,10 @@ public class TaskCntl {
     
     public ArrayList<Contact> requestContacts(){
         return parentCntl.requestContactList();
+    }
+    
+    public void updateUsers(){
+        new Serialize().write(parentCntl.getUserList());
+        parentCntl.setUserList(new Serialize().read());
     }
 }
